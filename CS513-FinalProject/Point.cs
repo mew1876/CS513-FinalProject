@@ -29,7 +29,7 @@ namespace CS513_FinalProject
 
             if (latitude < minLatitude)
             {
-                maxLatitude = latitude;
+                minLatitude = latitude;
             }
             if (longitude < minLongitude)
             {
@@ -41,7 +41,7 @@ namespace CS513_FinalProject
             }
             if (latitude > maxLatitude)
             {
-                minLatitude = latitude;
+                maxLatitude = latitude;
             }
             if (longitude > maxLongitude)
             {
