@@ -259,3 +259,5 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+/final_project_data
+/elevations.txt
