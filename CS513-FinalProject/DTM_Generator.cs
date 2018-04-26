@@ -46,5 +46,30 @@ namespace CS513_FinalProject
                 pointCloud.Add(point);
             }
         }
+
+        static double CalculateMean()
+        {
+            double summation = 0;
+            double count = 0;
+            foreach (Point point in pointCloud)
+            {
+                summation += point.elevation;
+                count += 1;
+            }
+            return summation / count;
+        }
+
+        static double CalculateStandardDeviation()
+        {
+            double mean = CalculateMean();
+            double summation = 0;
+            double count = 0;
+            foreach (Point point in pointCloud)
+            {
+                summation += Math.Pow(point.elevation - mean, 2);
+                count += 1;
+            }
+            return Math.Sqrt((1/count)*summation);
+        }
     }
 }
