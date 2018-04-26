@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace CS513_FinalProject
 {
@@ -14,26 +15,34 @@ namespace CS513_FinalProject
             
         static void Main(string[] args)
         {
-            loadPointCloud("../final_project_point_cloud.fuse");
+            LoadPointCloud("../final_project_point_cloud.fuse");
             pointCloud = pointCloud.OrderBy(point => point.elevation).ToList();
-            foreach (Point point in pointCloud)
-            {
-                Console.WriteLine(point.elevation);
-            }
-            Console.ReadLine(); //To keep console open till keypress
+            Bitmap heightMap = GenerateHeightMap(1000, 1000);
+            heightMap.Save("Height Map.png");
+            //Console.ReadLine(); //To keep console open till keypress
         }
 
-        static Bitmap generateHeightMap(int imageWidth, int imageHeight)
+        static Bitmap GenerateHeightMap(int imageWidth, int imageHeight)
         {
-            //draw points to bitmap
+            Bitmap heightMap = new Bitmap(imageWidth, imageHeight, PixelFormat.Format24bppRgb);
+            using (Graphics g = Graphics.FromImage(heightMap))
+            {
+                g.FillRectangle(Brushes.Black, 0, 0, imageWidth, imageHeight);
+                foreach(Point point in pointCloud)
+                {
+                    Color pointColor = Color.FromArgb((int)point.GetNormalizedElevation(), 0, 255 - (int)point.GetNormalizedElevation());
+                    g.FillRectangle(new SolidBrush(pointColor), (int)(point.GetNormalizedX() * imageWidth), (int)(point.GetNormalizedY() * imageHeight), 5, 5);
+                }
+            }
+            return heightMap;
         }
 
-        static void loadPointCloud(string path)
+        static void LoadPointCloud(string path)
         {
             foreach(string line in File.ReadLines(path))
             {
                 string[] elements = line.Split(' ');
-                Point point = new Point(float.Parse(elements[0]), float.Parse(elements[1]), float.Parse(elements[2]), int.Parse(elements[3]));
+                Point point = new Point(double.Parse(elements[0]), double.Parse(elements[1]), double.Parse(elements[2]), int.Parse(elements[3]));
                 pointCloud.Add(point);
             }
         }
