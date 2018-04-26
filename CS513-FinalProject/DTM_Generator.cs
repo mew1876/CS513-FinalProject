@@ -31,7 +31,9 @@ namespace CS513_FinalProject
                 foreach(Point point in pointCloud)
                 {
                     Color pointColor = Color.FromArgb((int)point.GetNormalizedElevation(), 0, 255 - (int)point.GetNormalizedElevation());
-                    g.FillRectangle(new SolidBrush(pointColor), (int)(point.GetNormalizedX() * imageWidth), (int)(point.GetNormalizedY() * imageHeight), 5, 5);
+                    int drawX = (int)(point.GetNormalizedX() * imageWidth);
+                    int drawY = (int)(point.GetNormalizedY() * imageHeight);
+                    g.FillRectangle(new SolidBrush(pointColor), drawX, drawY, 5, 5);
                 }
             }
             return heightMap;
