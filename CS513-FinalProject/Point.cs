@@ -8,6 +8,11 @@ namespace CS513_FinalProject
 {
     class Point
     {
+        private static float minLatitude = float.MaxValue;
+        private static float minLongitude = float.MaxValue;
+        private static float maxLatitude = float.MinValue;
+        private static float maxLongitude = float.MinValue;
+
         public float latitude;
         public float longitude;
         public float elevation;
@@ -19,6 +24,34 @@ namespace CS513_FinalProject
             this.longitude = longitude;
             this.elevation = elevation;
             this.intensity = intensity;
+
+            if (latitude < minLatitude)
+            {
+                maxLatitude = latitude;
+            }
+            if (latitude > maxLatitude)
+            {
+                minLatitude = latitude;
+            }
+            if (longitude < minLongitude)
+            {
+                minLongitude = longitude;
+            }
+            if (longitude > maxLongitude)
+            {
+                maxLongitude = longitude;
+            }
+        }
+
+        //get transformed points between 0 and 1
+        public float getImageX()
+        {
+
+        }
+
+        public float getImageY()
+        {
+
         }
 
         public override string ToString()

@@ -4,21 +4,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 
 namespace CS513_FinalProject
 {
     class DTM_Generator
     {
         static List<Point> pointCloud = new List<Point>();
-
+            
         static void Main(string[] args)
         {
             loadPointCloud("../final_project_point_cloud.fuse");
-            foreach(Point point in pointCloud)
+            pointCloud = pointCloud.OrderBy(point => point.elevation).ToList();
+            foreach (Point point in pointCloud)
             {
-                Console.WriteLine(point);
+                Console.WriteLine(point.elevation);
             }
             Console.ReadLine(); //To keep console open till keypress
+        }
+
+        static Bitmap generateHeightMap(int imageWidth, int imageHeight)
+        {
+            //draw points to bitmap
         }
 
         static void loadPointCloud(string path)
