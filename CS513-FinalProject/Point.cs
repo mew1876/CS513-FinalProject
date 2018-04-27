@@ -53,7 +53,6 @@ namespace CS513_FinalProject
             }
         }
 
-        //get transformed points between 0 and 1
         public double GetNormalizedX()
         {
             return (latitude - minLatitude) / (maxLatitude - minLatitude);

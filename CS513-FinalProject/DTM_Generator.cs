@@ -16,6 +16,7 @@ namespace CS513_FinalProject
         static void Main(string[] args)
         {
             LoadPointCloud("../final_project_point_cloud.fuse");
+            pointCloud = pointCloud.Except(GetElevationOutliers()).ToList();
             pointCloud = pointCloud.OrderBy(point => point.elevation).ToList();
             Bitmap heightMap = GenerateHeightMap(1000, 1000);
             heightMap.Save("Height Map.png");
@@ -30,13 +31,29 @@ namespace CS513_FinalProject
                 g.FillRectangle(Brushes.Black, 0, 0, imageWidth, imageHeight);
                 foreach(Point point in pointCloud)
                 {
-                    Color pointColor = Color.FromArgb((int)point.GetNormalizedElevation(), 0, 255 - (int)point.GetNormalizedElevation());
+                    Color pointColor = Color.FromArgb((int)point.GetNormalizedElevation(), 255 - (int)point.GetNormalizedElevation(), 0);
                     int drawX = (int)(point.GetNormalizedX() * imageWidth);
                     int drawY = (int)(point.GetNormalizedY() * imageHeight);
-                    g.FillRectangle(new SolidBrush(pointColor), drawX, drawY, 5, 5);
+                    g.FillRectangle(new SolidBrush(pointColor), drawX, drawY, 1, 1);
                 }
             }
             return heightMap;
+        }
+
+        static List<Point> GetElevationOutliers()
+        {
+            double meanElevation = CalculateElevationMean();
+            double stdevElevation = CalculateElevationStandardDeviation(meanElevation);
+
+            List<Point> outliers = new List<Point>();
+            foreach (Point point in pointCloud)
+            {
+                if (Math.Abs(point.elevation - meanElevation) > 2 * stdevElevation)
+                {
+                    outliers.Add(point);
+                }
+            }
+            return outliers;
         }
 
         static void LoadPointCloud(string path)
@@ -49,7 +66,7 @@ namespace CS513_FinalProject
             }
         }
 
-        static double CalculateMean()
+        static double CalculateElevationMean()
         {
             double summation = 0;
             double count = 0;
@@ -61,9 +78,8 @@ namespace CS513_FinalProject
             return summation / count;
         }
 
-        static double CalculateStandardDeviation()
+        static double CalculateElevationStandardDeviation(double mean)
         {
-            double mean = CalculateMean();
             double summation = 0;
             double count = 0;
             foreach (Point point in pointCloud)
