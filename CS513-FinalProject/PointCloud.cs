@@ -33,6 +33,8 @@ namespace CS513_FinalProject
             }
             return heightMap;
         }
+        //lat to rads
+        //long = sin(lat)
 
         public double ConvertToRad(double inputLongitude)
         {
@@ -86,14 +88,14 @@ namespace CS513_FinalProject
             return 255 * (point.elevation - minElevation) / (maxElevation - minElevation);
         }
 
-        public void RemoveElevationOutliers()
+        public void RemoveHighElevationOutliers()
         {
             double meanElevation = GetMeanElevation();
             double stdevElevation = GetStandardDeviationElevation(meanElevation);
 
             for (int i = this.Count - 1; i >= 0; i--)
             {
-                if (Math.Abs(this[i].elevation - meanElevation) > 5 * stdevElevation)
+                if (this[i].elevation - meanElevation > 2 * stdevElevation)
                 {
                     this.RemoveAt(i);
                 }

@@ -14,7 +14,7 @@ namespace CS513_FinalProject
         static void Main(string[] args)
         {
             PointCloud pointCloud = LoadPointCloud("../final_project_point_cloud.fuse");
-            pointCloud.RemoveElevationOutliers();
+            pointCloud.RemoveHighElevationOutliers();
             pointCloud.Sort((point1, point2) => point1.elevation.CompareTo(point2.elevation));
             Bitmap heightMap = pointCloud.GetHeightMap(1000, 1000);
             heightMap.Save("Height Map.png");
