@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DTM_Generator.cs" />
+    <Compile Include="ImageProcessor.cs" />
     <Compile Include="Point.cs" />
     <Compile Include="PointCloud.cs" />
   </ItemGroup>

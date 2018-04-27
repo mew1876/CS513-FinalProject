@@ -14,10 +14,16 @@ namespace CS513_FinalProject
         static void Main(string[] args)
         {
             PointCloud pointCloud = LoadPointCloud("../final_project_point_cloud.fuse");
+            Console.WriteLine("Point cloud loaded.");
             pointCloud.RemoveHighElevationOutliers();
             pointCloud.Sort((point1, point2) => -1 * point1.elevation.CompareTo(point2.elevation));
-            Bitmap heightMap = pointCloud.GetHeightMap(1000, 1000);
+            Console.WriteLine("Point cloud trimmed and sorted");
+            Bitmap heightMap = pointCloud.GetHeightMap();
+            Console.WriteLine("Raw height map generated");
+            //ImageProcessor.SmoothGridSquares(heightMap, 15);
+            Bitmap smoothMap = ImageProcessor.Convolve(heightMap, 10, (neighbors) => neighbors.Max());
             heightMap.Save("Height Map.png");
+            smoothMap.Save("Smooth Map.png");
             //Console.ReadLine(); //To keep console open till keypress
         }
 
