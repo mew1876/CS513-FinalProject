@@ -22,9 +22,30 @@ namespace CS513_FinalProject
             Console.WriteLine("Raw height map generated");
             //ImageProcessor.SmoothGridSquares(heightMap, 15);
             Bitmap smoothMap = ImageProcessor.Convolve(heightMap, 10, (neighbors) => neighbors.Max());
+            smoothMap = ImageProcessor.Convolve(smoothMap, 30, SpecialAverage);
             heightMap.Save("Height Map.png");
             smoothMap.Save("Smooth Map.png");
             //Console.ReadLine(); //To keep console open till keypress
+        }
+
+        static double SpecialAverage(double[] neighbors)
+        {
+            double meanNoBlack = 0;
+            int nNoBlack = 0;
+            foreach(double neighbor in neighbors)
+            {
+                if(neighbor > 0)
+                {
+                    nNoBlack++;
+                    meanNoBlack += neighbor;
+                }
+            }
+            if(nNoBlack == 0)
+            {
+                return 0;
+            }
+            meanNoBlack /= nNoBlack;
+            return meanNoBlack;
         }
 
         static PointCloud LoadPointCloud(string path)

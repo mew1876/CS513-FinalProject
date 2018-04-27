@@ -13,8 +13,8 @@ namespace CS513_FinalProject
         public static Bitmap Convolve(Bitmap original, int windowSize, Func<double[], double> f)
         {
             Bitmap result = new Bitmap(original.Width, original.Height, PixelFormat.Format24bppRgb);
-            Console.WriteLine("h=" + original.Height);
-            Console.WriteLine("w=" + original.Width);
+            //Console.WriteLine("h=" + original.Height);
+            //Console.WriteLine("w=" + original.Width);
             for (int y = 0; y < original.Height; y++)
             {
                 for(int x = 0; x < original.Width; x++)
