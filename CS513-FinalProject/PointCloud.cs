@@ -19,6 +19,13 @@ namespace CS513_FinalProject
 
         public Bitmap GetHeightMap(int imageWidth, int imageHeight)
         {
+            double latRange = maxLatitude - minLatitude;
+            double longRange = maxLongitude - minLongitude;
+
+            imageHeight = 1080;
+            imageWidth = (int)(imageHeight / longRange / Math.Sin(Math.PI / 180 * minLatitude) * latRange);
+            Console.WriteLine(imageWidth);
+
             Bitmap heightMap = new Bitmap(imageWidth, imageHeight, PixelFormat.Format24bppRgb);
             using (Graphics g = Graphics.FromImage(heightMap))
             {
@@ -28,13 +35,11 @@ namespace CS513_FinalProject
                     Color pointColor = Color.FromArgb((int)GetNormalizedElevation(point), 255 - (int)GetNormalizedElevation(point), 0);
                     int drawX = (int)(GetNormalizedX(point, imageWidth, imageHeight));
                     int drawY = (int)(GetNormalizedY(point, imageWidth, imageHeight));
-                    g.FillRectangle(new SolidBrush(pointColor), drawX, drawY, 1, 1);
+                    g.FillRectangle(new SolidBrush(pointColor), drawX, imageHeight - drawY, 1, 1);
                 }
             }
             return heightMap;
         }
-        //lat to rads
-        //long = sin(lat)
 
         public double ConvertToRad(double inputLongitude)
         {
@@ -46,12 +51,12 @@ namespace CS513_FinalProject
             return Math.Log(Math.Tan((Math.PI / 4) + (latitudeInRadians / 2)));
         }
 
-        public double ConvertMercNToY(double mercN, int imageWidth, int imageHeight)
+        public double ConvertMercNToX(double mercN, int imageWidth, int imageHeight)
         {
             return (imageHeight / 2) - (imageWidth * mercN / (2 * Math.PI));
         }
 
-        public double GetNormalizedX(Point point, int imageWidth, int imageHeight)
+        public double GetNormalizedY(Point point, int imageWidth, int imageHeight)
         {
             double x = (point.latitude + 180) * (imageWidth / 360);
             double xmin = (minLatitude + 180) * (imageWidth / 360);
@@ -62,7 +67,7 @@ namespace CS513_FinalProject
             return returnValue * imageWidth;
         }
 
-        public double GetNormalizedY(Point point, int imageWidth, int imageHeight)
+        public double GetNormalizedX(Point point, int imageWidth, int imageHeight)
         {
             // convert from degrees to radians
             double latRad = ConvertToRad(point.longitude);
@@ -74,9 +79,9 @@ namespace CS513_FinalProject
             double minMercN = ConvertToMercN(minLatRad);
             double maxMercN = ConvertToMercN(maxLatRad);
 
-            double y = ConvertMercNToY(mercN, imageWidth, imageHeight);
-            double ymin = ConvertMercNToY(minMercN, imageWidth, imageHeight);
-            double ymax = ConvertMercNToY(maxMercN, imageWidth, imageHeight);
+            double y = ConvertMercNToX(mercN, imageWidth, imageHeight);
+            double ymin = ConvertMercNToX(minMercN, imageWidth, imageHeight);
+            double ymax = ConvertMercNToX(maxMercN, imageWidth, imageHeight);
 
             double returnValue = (y - ymin) / (ymax - ymin);
             //Console.WriteLine("y=" + returnValue);
@@ -95,7 +100,7 @@ namespace CS513_FinalProject
 
             for (int i = this.Count - 1; i >= 0; i--)
             {
-                if (this[i].elevation - meanElevation > 2 * stdevElevation)
+                if (this[i].elevation - meanElevation > 1 * stdevElevation)
                 {
                     this.RemoveAt(i);
                 }
