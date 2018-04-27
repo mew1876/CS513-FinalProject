@@ -24,7 +24,6 @@ namespace CS513_FinalProject
 
             imageHeight = 1080;
             imageWidth = (int)(imageHeight / longRange / Math.Sin(Math.PI / 180 * minLatitude) * latRange);
-            Console.WriteLine(imageWidth);
 
             Bitmap heightMap = new Bitmap(imageWidth, imageHeight, PixelFormat.Format24bppRgb);
             using (Graphics g = Graphics.FromImage(heightMap))
@@ -32,10 +31,12 @@ namespace CS513_FinalProject
                 g.FillRectangle(Brushes.Black, 0, 0, imageWidth, imageHeight);
                 foreach (Point point in this.AsEnumerable())
                 {
-                    Color pointColor = Color.FromArgb((int)GetNormalizedElevation(point), 255 - (int)GetNormalizedElevation(point), 0);
+                    HsvToRgb(180 * (1 - GetNormalizedElevation(point)), 1, 1, out int red, out int green, out int blue);
+                    Color pointColor = Color.FromArgb(red, green, blue);
                     int drawX = (int)(GetNormalizedX(point, imageWidth, imageHeight));
                     int drawY = (int)(GetNormalizedY(point, imageWidth, imageHeight));
-                    g.FillRectangle(new SolidBrush(pointColor), drawX, imageHeight - drawY, 1, 1);
+                    int size = 1;/* + (int)(9 * (1 - GetNormalizedElevation(point)));*/
+                    g.FillRectangle(new SolidBrush(pointColor), drawX, imageHeight - drawY, size, size);
                 }
             }
             return heightMap;
@@ -90,7 +91,7 @@ namespace CS513_FinalProject
 
         public double GetNormalizedElevation(Point point)
         {
-            return 255 * (point.elevation - minElevation) / (maxElevation - minElevation);
+            return (point.elevation - minElevation) / (maxElevation - minElevation);
         }
 
         public void RemoveHighElevationOutliers()
@@ -197,6 +198,111 @@ namespace CS513_FinalProject
                     maxElevation = point.elevation;
                 }
             }
+        }
+        void HsvToRgb(double h, double S, double V, out int r, out int g, out int b)
+        {
+            // ######################################################################
+            // T. Nathan Mundhenk
+            // mundhenk@usc.edu
+            // C/C++ Macro HSV to RGB
+
+            double H = h;
+            while (H < 0) { H += 360; };
+            while (H >= 360) { H -= 360; };
+            double R, G, B;
+            if (V <= 0)
+            { R = G = B = 0; }
+            else if (S <= 0)
+            {
+                R = G = B = V;
+            }
+            else
+            {
+                double hf = H / 60.0;
+                int i = (int)Math.Floor(hf);
+                double f = hf - i;
+                double pv = V * (1 - S);
+                double qv = V * (1 - S * f);
+                double tv = V * (1 - S * (1 - f));
+                switch (i)
+                {
+
+                    // Red is the dominant color
+
+                    case 0:
+                        R = V;
+                        G = tv;
+                        B = pv;
+                        break;
+
+                    // Green is the dominant color
+
+                    case 1:
+                        R = qv;
+                        G = V;
+                        B = pv;
+                        break;
+                    case 2:
+                        R = pv;
+                        G = V;
+                        B = tv;
+                        break;
+
+                    // Blue is the dominant color
+
+                    case 3:
+                        R = pv;
+                        G = qv;
+                        B = V;
+                        break;
+                    case 4:
+                        R = tv;
+                        G = pv;
+                        B = V;
+                        break;
+
+                    // Red is the dominant color
+
+                    case 5:
+                        R = V;
+                        G = pv;
+                        B = qv;
+                        break;
+
+                    // Just in case we overshoot on our math by a little, we put these here. Since its a switch it won't slow us down at all to put these here.
+
+                    case 6:
+                        R = V;
+                        G = tv;
+                        B = pv;
+                        break;
+                    case -1:
+                        R = V;
+                        G = pv;
+                        B = qv;
+                        break;
+
+                    // The color is not defined, we should throw an error.
+
+                    default:
+                        //LFATAL("i Value error in Pixel conversion, Value is %d", i);
+                        R = G = B = V; // Just pretend its black/white
+                        break;
+                }
+            }
+            r = Clamp((int)(R * 255.0));
+            g = Clamp((int)(G * 255.0));
+            b = Clamp((int)(B * 255.0));
+        }
+
+        /// <summary>
+        /// Clamp a value to 0-255
+        /// </summary>
+        int Clamp(int i)
+        {
+            if (i < 0) return 0;
+            if (i > 255) return 255;
+            return i;
         }
     }
 }
