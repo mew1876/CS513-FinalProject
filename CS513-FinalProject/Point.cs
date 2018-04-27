@@ -53,15 +53,52 @@ namespace CS513_FinalProject
             }
         }
 
-        //get transformed points between 0 and 1
-        public double GetNormalizedX()
+        public double ConvertToRad(double inputLongitude)
         {
-            return (latitude - minLatitude) / (maxLatitude - minLatitude);
+            return inputLongitude * Math.PI / 180;
         }
 
-        public double GetNormalizedY()
+        public double ConvertToMercN(double latitudeInRadians)
         {
-            return (longitude - minLongitude) * Math.Cos(Math.PI / 180 * latitude) / (maxLongitude - minLongitude);
+            return Math.Log(Math.Tan((Math.PI / 4) + (latitudeInRadians / 2)));
+        }
+
+        public double ConvertMercNToY(double mercN, int imageWidth, int imageHeight)
+        {
+            return (imageHeight / 2) - (imageWidth * mercN / (2 * Math.PI));
+        }
+
+        //get transformed points between 0 and 1
+        public double GetNormalizedX(int imageWidth, int imageHeight)
+        {
+            double x = (latitude + 180) * (imageWidth / 360);
+            double xmin = (minLatitude + 180) * (imageWidth / 360);
+            double xmax = (maxLatitude + 180) * (imageWidth / 360);
+
+            double returnValue = (x - xmin) / (xmax - xmin);
+            //Console.WriteLine("y=" + returnValue);
+            return returnValue * imageWidth;
+        }
+
+        public double GetNormalizedY(int imageWidth, int imageHeight)
+        {
+            // convert from degrees to radians
+            double latRad = ConvertToRad(longitude);
+            double minLatRad = ConvertToRad(minLongitude);
+            double maxLatRad = ConvertToRad(maxLongitude);
+
+            // get y value
+            double mercN = ConvertToMercN(latRad);
+            double minMercN = ConvertToMercN(minLatRad);
+            double maxMercN = ConvertToMercN(maxLatRad);
+
+            double y = ConvertMercNToY(mercN, imageWidth, imageHeight);
+            double ymin = ConvertMercNToY(minMercN, imageWidth, imageHeight);
+            double ymax = ConvertMercNToY(maxMercN, imageWidth, imageHeight);
+
+            double returnValue = (y - ymin) / (ymax - ymin);
+            //Console.WriteLine("y=" + returnValue);
+            return returnValue * imageHeight;
         }
 
         public double GetNormalizedElevation()
